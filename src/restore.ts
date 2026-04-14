@@ -1,5 +1,6 @@
 import { $ } from "bun";
 import { bundledSkillsPath, envVars, skillTargetDirs } from "./constants";
+import { getLLMConfigPath, getModelsDir } from "./llms";
 import { pathExists } from "./utils/filesystem";
 
 export async function restoreConfigFolder(): Promise<void> {
@@ -89,18 +90,13 @@ export async function restoreAiSkills(): Promise<void> {
 
 export async function restoreLLMConfigs(): Promise<void> {
     const backupDir = process.env[envVars.backupDir];
-    const homeDir = process.env[envVars.homeDir];
 
     if (!backupDir) {
         throw new Error(`${envVars.backupDir} environment variable is not set`);
     }
 
-    if (!homeDir) {
-        throw new Error(`${envVars.homeDir} environment variable is not set`);
-    }
-
     const backupPath = `${backupDir}/llm-config-backup-latest.json`;
-    const targetPath = `${homeDir}/Models/package.json`;
+	const targetPath = getLLMConfigPath();
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const archivedPath = `${backupDir}/llm-config-pre-restore-${timestamp}.json`;
     const partialRestorePath = `${backupDir}/llm-config-restore-incomplete-${timestamp}.json`;
@@ -114,6 +110,7 @@ export async function restoreLLMConfigs(): Promise<void> {
 
     try {
         await $`mkdir -p ${backupDir}`;
+		await $`mkdir -p ${getModelsDir()}`;
 
         if (targetExists) {
             await $`mv ${targetPath} ${archivedPath}`;

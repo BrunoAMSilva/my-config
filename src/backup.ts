@@ -1,5 +1,6 @@
 import { $ } from "bun";
 import { envVars } from "./constants";
+import { getLLMConfigPath } from "./llms";
 import { pathExists } from "./utils/filesystem";
 
 export async function backupConfigFolder(): Promise<void> {
@@ -37,17 +38,12 @@ export async function backupConfigFolder(): Promise<void> {
 
 export async function backupLLMConfigs(): Promise<void> {
     const backupDir = process.env[envVars.backupDir];
-    const homeDir = process.env[envVars.homeDir];
 
     if (!backupDir) {
         throw new Error(`${envVars.backupDir} environment variable is not set`);
     }
 
-    if (!homeDir) {
-        throw new Error(`${envVars.homeDir} environment variable is not set`);
-    }
-
-    const sourceDir = `${homeDir}/Models/package.json`;
+    const sourceDir = getLLMConfigPath();
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const backupPath = `${backupDir}/llm-config-backup-latest.json`;
     const timestampedPath = `${backupDir}/llm-config-backup-${timestamp}.json`;

@@ -3,6 +3,12 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "start": "bun run index.ts",
+    "models:init": "bun run index.ts models init",
+    "models:list": "bun run index.ts models list",
+    "models:add-hf": "bun run index.ts models add-hf"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
